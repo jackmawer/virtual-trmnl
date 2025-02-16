@@ -4,9 +4,9 @@
 <script>
 async function updateDisplay(key) {
     const apiResp = await fetch("https://usetrmnl.com/api/display", {headers:{"access-token": key}});
-    console.dir(apiResp);
     if (!apiResp.ok) setTimeout(()=>updateDisplay(key), 5000);
     const data = await apiResp.json();
+    console.dir(data);
     if (data.image_url) document.querySelector('body').style.background = `center / contain no-repeat white url('${data.image_url}')`;
     if (data.refresh_rate) setTimeout(()=>updateDisplay(key), data.refresh_rate*1000)
     else setTimeout(()=>updateDisplay(key), 5000)

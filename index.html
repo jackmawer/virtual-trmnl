@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+async function updateDisplay(key) {
+    const apiResp = await fetch("https://usetrmnl.com/api/display", {headers:{"access-token": key}});
+    console.dir(apiResp);
+    if (!apiResp.ok) setTimeout(()=>updateDisplay(key), 5000);
+    const data = await apiResp.json();
+    if (data.image_url) document.querySelector('body').style.background = `center / contain no-repeat white url('${data.image_url}')`;
+    if (data.refresh_rate) setTimeout(()=>updateDisplay(key), data.refresh_rate*1000)
+    else setTimeout(()=>updateDisplay(key), 5000)
+}
+
+function main() {
+    const params = new URLSearchParams(window.location.search);
+    // Set dark mode
+    if (params.get('dark')) document.querySelector('body').style.backdropFilter = "invert()";
+    // Get API key
+    if (params.get('key')) updateDisplay(params.get('key'));
+    else document.querySelector('body').innerHTML = `<h1>Missing <code>key</code>!</h1><p><code>key</code>: TRMNL API key<br><code>dark</code>: Invert the result image for a simulated dark mode</p>`;
+}
+
+document.addEventListener("DOMContentLoaded", main);
+</script>
+<style>
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+body {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+</style>
+</head>
+<body>
+</body>
+</html>

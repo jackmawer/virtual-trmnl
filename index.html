@@ -3,23 +3,26 @@
 <head>
 <script>
 async function updateDisplay(opts) {
-    const {key} = opts;
+    const {key, id, refresh_rate} = opts;
 
-    const headers = {
-        "access-token": key,
-        "refresh-rate": "1800",
-        "Battery-Voltage": '4.1',
-        "FW-Version": '1.4.5',
-        "RSSI": '-69'
-    };
-    if (opts.id) headers.id = opts.id;
+    const headers = new Headers();
+    headers.append("Accept", "*/*");
+    headers.append("Access-Token", key);
+    if (id) headers.append("ID", id);
+    headers.append("FW-Version", '1.4.5');
+    headers.append("Battery-Voltage", `4.${Math.round(Math.random()*10)}`); // 4.0 - 4.9
+    headers.append("RSSI", '-69')
+    if (refresh_rate) headers.append("Refresh-Rate", refresh_rate);
 
-    const apiResp = await fetch("https://usetrmnl.com/api/display", {headers});
-    if (!apiResp.ok) setTimeout(()=>updateDisplay(opts), 5000);
+    const apiResp = await fetch("https://usetrmnl.com/api/display", {method: "GET", headers, redirect: "follow"});
+    if (!apiResp.ok) setTimeout(()=>updateDisplay(opts), 5000); // If not okay retry - we should probably do backoff for this.
+
     const data = await apiResp.json();
     console.dir(data);
+
     if (data.image_url) document.querySelector('body').style.background = `center / contain no-repeat white url('${data.image_url}')`;
-    if (data.refresh_rate) setTimeout(()=>updateDisplay(opts), data.refresh_rate*1000)
+
+    if (data.refresh_rate) setTimeout(()=>updateDisplay({refresh_rate: data.refresh_rate, ...opts}), data.refresh_rate*1000)
     else setTimeout(()=>updateDisplay(opts), 5000)
 }
 

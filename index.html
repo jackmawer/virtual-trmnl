@@ -9,7 +9,7 @@ async function updateDisplay(opts) {
         "access-token": key,
         "refresh-rate": "1800",
         "Battery-Voltage": '4.1',
-        "FW-Version": '2.1.3',
+        "FW-Version": '1.4.5',
         "RSSI": '-69'
     };
     if (opts.id) headers.id = opts.id;
@@ -32,7 +32,7 @@ function main() {
         id: params.get('id'),
         key: params.get('key')
     });
-    else document.querySelector('body').innerHTML = `<h1>Missing <code>key</code>!</h1><p><code>key</code>: TRMNL API key<br><code>dark</code>: Invert the result image for a simulated dark mode</p>`;
+    else document.querySelector('body').innerHTML = `<h1>Missing <code>key</code>!</h1><p><code>key</code>: TRMNL API key<br><code>id</code>: Display MAC address<br><code>dark</code>: Invert the result image for a simulated dark mode</p>`;
 }
 
 document.addEventListener("DOMContentLoaded", main);

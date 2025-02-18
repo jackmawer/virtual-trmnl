@@ -2,22 +2,36 @@
 <html>
 <head>
 <script>
-async function updateDisplay(key) {
-    const apiResp = await fetch("https://usetrmnl.com/api/display", {headers:{"access-token": key}});
-    if (!apiResp.ok) setTimeout(()=>updateDisplay(key), 5000);
+async function updateDisplay(opts) {
+    const {key} = opts;
+
+    const headers = {
+        "access-token": key,
+        "refresh-rate": "1800",
+        "Battery-Voltage": '4.1',
+        "FW-Version": '2.1.3',
+        "RSSI": '-69'
+    };
+    if (opts.id) headers.id = opts.id;
+
+    const apiResp = await fetch("https://usetrmnl.com/api/display", {headers});
+    if (!apiResp.ok) setTimeout(()=>updateDisplay(opts), 5000);
     const data = await apiResp.json();
     console.dir(data);
     if (data.image_url) document.querySelector('body').style.background = `center / contain no-repeat white url('${data.image_url}')`;
-    if (data.refresh_rate) setTimeout(()=>updateDisplay(key), data.refresh_rate*1000)
-    else setTimeout(()=>updateDisplay(key), 5000)
+    if (data.refresh_rate) setTimeout(()=>updateDisplay(opts), data.refresh_rate*1000)
+    else setTimeout(()=>updateDisplay(opts), 5000)
 }
 
 function main() {
     const params = new URLSearchParams(window.location.search);
     // Set dark mode
-    if (params.get('dark')) document.querySelector('body').style.backdropFilter = "invert()";
-    // Get API key
-    if (params.get('key')) updateDisplay(params.get('key'));
+    if (params.has('dark')) document.querySelector('body').style.backdropFilter = "invert()";
+    // Check for API key
+    if (!params.has('key')) updateDisplay({
+        id: params.get('id'),
+        key: params.get('key')
+    });
     else document.querySelector('body').innerHTML = `<h1>Missing <code>key</code>!</h1><p><code>key</code>: TRMNL API key<br><code>dark</code>: Invert the result image for a simulated dark mode</p>`;
 }
 

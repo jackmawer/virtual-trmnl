@@ -28,7 +28,7 @@ function main() {
     // Set dark mode
     if (params.has('dark')) document.querySelector('body').style.backdropFilter = "invert()";
     // Check for API key
-    if (!params.has('key')) updateDisplay({
+    if (params.has('key')) updateDisplay({
         id: params.get('id'),
         key: params.get('key')
     });
